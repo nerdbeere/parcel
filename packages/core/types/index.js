@@ -338,16 +338,25 @@ type ResolveConfigFn = (
 export type Validator = {|
   validate({
     asset: Asset,
+    localRequire: LocalRequire,
     resolveConfig: ResolveConfigFn, // This is a temporary function and should be replaced with something cacheable
     options: PluginOptions
   }): Async<void>
 |};
 
+export type LocalRequire = (
+  name: string,
+  path: FilePath,
+  triedInstall?: boolean
+  // $FlowFixMe
+) => Promise<any>;
+
 export type Transformer = {
   getConfig?: ({
     asset: MutableAsset,
     resolve: ResolveFn,
-    options: PluginOptions
+    options: PluginOptions,
+    localRequire: LocalRequire
   }) => Async<Config | void>,
   canReuseAST?: ({ast: AST, options: PluginOptions}) => boolean,
   parse?: ({
@@ -360,7 +369,8 @@ export type Transformer = {
     asset: MutableAsset,
     config: ?Config,
     resolve: ResolveFn,
-    options: PluginOptions
+    options: PluginOptions,
+    localRequire: LocalRequire
   }): Async<Array<TransformerResult | MutableAsset>>,
   generate?: ({
     asset: MutableAsset,

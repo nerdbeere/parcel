@@ -1,8 +1,10 @@
 // @flow strict-local
-import nullthrows from 'nullthrows';
+
 import type Config from './public/Config';
 import type {AssetRequest, NodeId, ConfigRequest, ParcelOptions} from './types';
+import type {WorkerApi} from '@parcel/workers';
 
+import nullthrows from 'nullthrows';
 import path from 'path';
 import {resolveConfig} from '@parcel/utils';
 
@@ -15,7 +17,8 @@ export type ValidationOpts = {|
   request: AssetRequest,
   loadConfig: (ConfigRequest, NodeId) => Promise<Config>,
   parentNodeId: NodeId,
-  options: ParcelOptions
+  options: ParcelOptions,
+  workerApi: WorkerApi
 |};
 
 export default class Validation {
@@ -24,8 +27,15 @@ export default class Validation {
   loadConfig: ConfigRequest => Promise<Config>;
   options: ParcelOptions;
   impactfulOptions: $Shape<ParcelOptions>;
+  workerApi: WorkerApi;
 
-  constructor({request, loadConfig, parentNodeId, options}: ValidationOpts) {
+  constructor({
+    request,
+    loadConfig,
+    parentNodeId,
+    options,
+    workerApi
+  }: ValidationOpts) {
     this.request = request;
     this.configRequests = [];
     this.loadConfig = configRequest => {
@@ -33,6 +43,7 @@ export default class Validation {
       return loadConfig(configRequest, parentNodeId);
     };
     this.options = options;
+    this.workerApi = workerApi;
   }
 
   async run(): Promise<void> {
