@@ -3,6 +3,7 @@
 import type {Readable} from 'stream';
 import type SourceMap from '@parcel/source-map';
 import type {FileSystem} from '@parcel/fs';
+import type WorkerFarm from '@parcel/workers';
 
 import type {AST as _AST, Config as _Config} from './unsafe';
 
@@ -166,7 +167,8 @@ export type InitialParcelOptions = {|
   logLevel?: LogLevel,
 
   inputFS?: FileSystem,
-  outputFS?: FileSystem
+  outputFS?: FileSystem,
+  workerFarm?: WorkerFarm
 
   // contentHash
   // throwErrors
