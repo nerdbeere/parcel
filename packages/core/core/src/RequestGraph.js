@@ -155,6 +155,7 @@ export default class RequestGraph extends Graph<RequestGraphNode> {
     this.farm = workerFarm;
     this.runTransform = this.farm.createHandle('runTransform');
     this.runValidate = this.farm.createHandle('runValidate');
+    // $FlowFixMe
     this.loadConfigHandle = this.farm.createReverseHandle(
       this.loadConfig.bind(this)
     );

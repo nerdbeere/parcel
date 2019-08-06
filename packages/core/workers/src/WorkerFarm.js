@@ -55,7 +55,8 @@ export default class WorkerFarm extends EventEmitter {
   run: HandleFunction;
   warmWorkers: number = 0;
   workers: Map<number, Worker> = new Map();
-  handles: Map<number, Handle> = new Map();
+  handleFns: Map<number, (fn: string, args: Array<mixed>) => mixed> = new Map();
+  handles: Array<Handle> = [];
 
   constructor(farmOptions: $Shape<FarmOptions> = {}) {
     super();
@@ -83,7 +84,7 @@ export default class WorkerFarm extends EventEmitter {
   workerApi = {
     callMaster: async (
       request: CallRequest,
-      awaitResponse: boolean = true
+      awaitResponse: ?boolean = true
     ): Promise<mixed> => {
       // $FlowFixMe
       return this.processRequest({
@@ -220,7 +221,7 @@ export default class WorkerFarm extends EventEmitter {
     let {method, args, location, awaitResponse, idx, handle} = data;
     let mod;
     if (handle) {
-      mod = nullthrows(this.handles.get(handle));
+      mod = nullthrows(this.handleFns.get(handle));
     } else if (location) {
       // $FlowFixMe this must be dynamic
       mod = require(location);
@@ -251,11 +252,13 @@ export default class WorkerFarm extends EventEmitter {
       }
     } else {
       // ESModule default interop
+      // $FlowFixMe
       if (mod.__esModule && !mod[method] && mod.default) {
         mod = mod.default;
       }
 
       try {
+        // $FlowFixMe
         result = responseFromContent(await mod[method](...args));
       } catch (e) {
         result = errorResponseFromError(e);
@@ -322,7 +325,8 @@ export default class WorkerFarm extends EventEmitter {
 
   createReverseHandle(fn: (fn: string, args: Array<mixed>) => mixed) {
     let handle = new Handle({workerApi: this.workerApi});
-    this.handles.set(handle.id, fn);
+    this.handleFns.set(handle.id, fn);
+    this.handles.push(handle);
     return handle;
   }
 
