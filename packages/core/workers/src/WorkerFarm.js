@@ -42,6 +42,8 @@ export type WorkerApi = {|
   callMaster(CallRequest, ?boolean): Promise<mixed>
 |};
 
+export {Handle};
+
 /**
  * workerPath should always be defined inside farmOptions
  */

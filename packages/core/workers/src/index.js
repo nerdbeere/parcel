@@ -37,3 +37,4 @@ if (!WorkerFarm.isWorker()) {
 
 export default WorkerFarm;
 export {bus};
+export {Handle} from './WorkerFarm';

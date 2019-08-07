@@ -24,7 +24,7 @@ import resolve from 'resolve';
 
 const workerFarm = createWorkerFarm();
 export const inputFS = new NodeFS();
-export const outputFS = new MemoryFS();
+export const outputFS = new MemoryFS(workerFarm);
 export const ncp = promisify(_ncp);
 
 // Mocha is currently run with exit: true because of this issue preventing us
